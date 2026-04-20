@@ -586,6 +586,28 @@ table th {
     text-decoration: none;
 }
 
+.nutrition-log {
+    margin-top: 20px;
+}
+
+.nutrition-log h4 {
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.nutrition-log ul {
+    list-style: none;
+    padding: 0;
+}
+
+.nutrition-log li {
+    padding: 10px;
+    background-color: var(--darker-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    margin-bottom: 10px;
+}
+
 /* Toast notifications */
 .toast {
     position: fixed;

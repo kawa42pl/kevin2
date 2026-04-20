@@ -1,0 +1,11 @@
+# Wyłącz listowanie katalogów
+Options -Indexes
+
+# Blokada bezpośredniego dostępu do katalogu /data/
+RewriteEngine On
+RewriteRule ^data/ - [F,L]
+
+# Przepisywanie URL dla czystych linków
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?page=$1 [QSA,L]

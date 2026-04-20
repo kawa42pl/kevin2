@@ -595,6 +595,21 @@ table th {
     margin-bottom: 10px;
 }
 
+.nutrition-summary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(150px, 1fr));
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.nutrition-summary span {
+    display: block;
+    background-color: var(--darker-bg);
+    padding: 10px;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+}
+
 .nutrition-log ul {
     list-style: none;
     padding: 0;

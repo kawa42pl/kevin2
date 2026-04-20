@@ -41,6 +41,18 @@
                         <input type="number" id="caloriesAmount" min="1" required>
                     </div>
                     <div class="form-group">
+                        <label for="proteinAmount">Białko (g):</label>
+                        <input type="number" id="proteinAmount" min="0" step="0.1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="fatAmount">Tłuszcze (g):</label>
+                        <input type="number" id="fatAmount" min="0" step="0.1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="carbsAmount">Węglowodany (g):</label>
+                        <input type="number" id="carbsAmount" min="0" step="0.1" required>
+                    </div>
+                    <div class="form-group">
                         <label for="caloriesDescription">Opis produktu/posiłku:</label>
                         <input type="text" id="caloriesDescription" placeholder="np. owsianka, kurczak, shake">
                     </div>
@@ -48,20 +60,32 @@
                 </form>
                 <div class="nutrition-log">
                     <h4>Dzisiejszy dziennik</h4>
+                    <div class="nutrition-summary">
+                        <span>Kalorie: <strong id="totalCalories">0</strong> kcal</span>
+                        <span>Białko: <strong id="totalProtein">0</strong> g</span>
+                        <span>Tłuszcze: <strong id="totalFat">0</strong> g</span>
+                        <span>Węglowodany: <strong id="totalCarbs">0</strong> g</span>
+                    </div>
                     <ul id="calorieEntriesList">
                         <?php
                         $todayEntries = [];
+                        $todayTotals = ['calories' => 0, 'protein' => 0, 'fat' => 0, 'carbs' => 0];
                         foreach ($nutrition as $entry) {
                             if ($entry['date'] === $today) {
                                 $todayEntries = $entry['entries'] ?? [];
+                                $todayTotals['calories'] = $entry['consumed'] ?? 0;
+                                $todayTotals['protein'] = $entry['protein'] ?? 0;
+                                $todayTotals['fat'] = $entry['fat'] ?? 0;
+                                $todayTotals['carbs'] = $entry['carbs'] ?? 0;
                                 break;
                             }
                         }
+                        echo '<script>window.initialNutritionTotals = ' . json_encode($todayTotals) . ';</script>';
                         if (!$todayEntries) {
                             echo '<li class="empty-state">Brak wpisów kalorycznych na dziś.</li>';
                         } else {
                             foreach ($todayEntries as $item) {
-                                echo '<li>' . htmlspecialchars($item['time'] ?? '') . ' - ' . htmlspecialchars($item['description'] ?? 'posiłek') . ': ' . intval($item['calories']) . ' kcal</li>';
+                                echo '<li>' . htmlspecialchars($item['time'] ?? '') . ' - ' . htmlspecialchars($item['description'] ?? 'posiłek') . ': ' . intval($item['calories']) . ' kcal, ' . floatval($item['protein']) . 'g B, ' . floatval($item['fat']) . 'g T, ' . floatval($item['carbs']) . 'g W</li>';
                             }
                         }
                         ?>
@@ -231,10 +255,14 @@ function loadNutritionData() {
                 } else {
                     entry.entries.forEach(item => {
                         const listItem = document.createElement('li');
-                        listItem.textContent = `${item.time || ''} - ${item.description || 'posiłek'}: ${item.calories} kcal`;
+                        listItem.textContent = `${item.time || ''} - ${item.description || 'posiłek'}: ${item.calories} kcal, ${item.protein || 0}g B, ${item.fat || 0}g T, ${item.carbs || 0}g W`;
                         list.appendChild(listItem);
                     });
                 }
+                document.getElementById('totalCalories').textContent = entry.consumed || 0;
+                document.getElementById('totalProtein').textContent = entry.protein || 0;
+                document.getElementById('totalFat').textContent = entry.fat || 0;
+                document.getElementById('totalCarbs').textContent = entry.carbs || 0;
             }
         });
 }
@@ -242,16 +270,22 @@ function loadNutritionData() {
 function addCalories(event) {
     event.preventDefault();
     const calories = parseInt(document.getElementById('caloriesAmount').value, 10);
-    const description = document.getElementById('caloriesDescription').value.trim();
+    const protein = parseFloat(document.getElementById('proteinAmount').value);
+    const fat = parseFloat(document.getElementById('fatAmount').value);
+    const carbs = parseFloat(document.getElementById('carbsAmount').value);
     if (!calories || calories <= 0) {
         showToast('Wprowadź liczbę kalorii większą niż 0', 'error');
+        return;
+    }
+    if (protein < 0 || fat < 0 || carbs < 0) {
+        showToast('Podaj poprawne wartości makroskładników', 'error');
         return;
     }
 
     fetch('api/nutrition.php?action=add_calories', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ calories, description })
+        body: JSON.stringify({ calories, protein, fat, carbs, description })
     })
         .then(response => response.json())
         .then(data => {

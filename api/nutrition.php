@@ -73,11 +73,14 @@ switch ($action) {
     case 'add_calories':
         $input = json_decode(file_get_contents('php://input'), true);
         $calories = validateInput($input['calories'] ?? 0, 'int');
+        $protein = validateInput($input['protein'] ?? 0, 'float');
+        $fat = validateInput($input['fat'] ?? 0, 'float');
+        $carbs = validateInput($input['carbs'] ?? 0, 'float');
         $description = validateInput($input['description'] ?? '');
         $date = validateInput($input['date'] ?? date('Y-m-d'));
 
-        if ($calories <= 0) {
-            echo json_encode(['success' => false, 'error' => 'Podaj poprawną liczbę kalorii']);
+        if ($calories <= 0 || $protein < 0 || $fat < 0 || $carbs < 0) {
+            echo json_encode(['success' => false, 'error' => 'Podaj poprawne wartości makroskładników']);
             exit;
         }
 
@@ -92,9 +95,15 @@ switch ($action) {
                     'id' => generateId(),
                     'time' => date('H:i'),
                     'calories' => $calories,
+                    'protein' => $protein,
+                    'fat' => $fat,
+                    'carbs' => $carbs,
                     'description' => $description
                 ];
                 $entry['consumed'] = ($entry['consumed'] ?? 0) + $calories;
+                $entry['protein'] = ($entry['protein'] ?? 0) + $protein;
+                $entry['fat'] = ($entry['fat'] ?? 0) + $fat;
+                $entry['carbs'] = ($entry['carbs'] ?? 0) + $carbs;
                 break;
             }
         }
@@ -105,10 +114,16 @@ switch ($action) {
                 'date' => $today,
                 'goal' => 2000,
                 'consumed' => $calories,
+                'protein' => $protein,
+                'fat' => $fat,
+                'carbs' => $carbs,
                 'entries' => [[
                     'id' => generateId(),
                     'time' => date('H:i'),
                     'calories' => $calories,
+                    'protein' => $protein,
+                    'fat' => $fat,
+                    'carbs' => $carbs,
                     'description' => $description
                 ]]
             ];
@@ -120,6 +135,9 @@ switch ($action) {
                 'date' => $today,
                 'goal' => 2000,
                 'consumed' => 0,
+                'protein' => 0,
+                'fat' => 0,
+                'carbs' => 0,
                 'entries' => []
             ];
             foreach ($nutrition as $item) {
@@ -141,6 +159,9 @@ switch ($action) {
             'date' => $today,
             'goal' => 2000,
             'consumed' => 0,
+            'protein' => 0,
+            'fat' => 0,
+            'carbs' => 0,
             'entries' => []
         ];
 

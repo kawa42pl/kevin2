@@ -180,4 +180,16 @@ function parseDate($date) {
     }
     return $date;
 }
+
+/**
+ * Oblicza wiek na podstawie daty urodzenia
+ * @param string $birthdate Data urodzenia w formacie Y-m-d
+ * @return int Wiek w latach
+ */
+function calculateAge($birthdate) {
+    $birth = new DateTime($birthdate);
+    $today = new DateTime();
+    $diff = $today->diff($birth);
+    return $diff->y;
+}
 ?>

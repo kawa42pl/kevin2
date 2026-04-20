@@ -5,24 +5,28 @@
             <h3>Kalkulator Kalorii</h3>
         </div>
         <div class="card-body">
+            <?php
+            $profile = $_SESSION['user_data'] ?? null;
+            $profileAge = $profile ? calculateAge($profile['birthdate']) : '';
+            ?>
             <form id="calorieForm">
                 <div class="form-group">
                     <label for="weight">Masa ciała (kg):</label>
-                    <input type="number" id="weight" step="0.1" required>
+                    <input type="number" id="weight" step="0.1" required value="<?php echo $profile['weight'] ?? ''; ?>">
                 </div>
                 <div class="form-group">
                     <label for="height">Wzrost (cm):</label>
-                    <input type="number" id="height" required>
+                    <input type="number" id="height" required value="<?php echo $profile['height'] ?? ''; ?>">
                 </div>
                 <div class="form-group">
                     <label for="age">Wiek:</label>
-                    <input type="number" id="age" required>
+                    <input type="number" id="age" required value="<?php echo $profileAge; ?>">
                 </div>
                 <div class="form-group">
                     <label for="gender">Płeć:</label>
                     <select id="gender" required>
-                        <option value="male">Mężczyzna</option>
-                        <option value="female">Kobieta</option>
+                        <option value="male"<?php echo (isset($profile['gender']) && $profile['gender'] === 'male') ? ' selected' : ''; ?>>Mężczyzna</option>
+                        <option value="female"<?php echo (isset($profile['gender']) && $profile['gender'] === 'female') ? ' selected' : ''; ?>>Kobieta</option>
                     </select>
                 </div>
                 <div class="form-group">

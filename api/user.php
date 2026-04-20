@@ -42,6 +42,11 @@ switch ($action) {
         ];
 
         if (saveJsonData('../data/users.json', $users)) {
+            // Ustaw profil jako aktywny, jeśli nie ma jeszcze aktywnego profilu lub edytowany profil jest aktualny
+            if (!isset($_SESSION['user_id']) || $_SESSION['user_id'] === $id) {
+                $_SESSION['user_id'] = $id;
+                $_SESSION['user_data'] = $users[$id];
+            }
             echo json_encode(['success' => true]);
         } else {
             echo json_encode(['success' => false, 'error' => 'Błąd zapisu']);

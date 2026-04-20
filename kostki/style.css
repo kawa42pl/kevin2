@@ -1,0 +1,246 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 10px;
+}
+
+.kontener {
+    max-width: 900px;
+    margin: 0 auto;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin: 0 0 20px 0;
+}
+
+h2 {
+    color: #555;
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+.game-area {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 20px;
+}
+
+.dice-section {
+    flex: 1;
+    text-align: center;
+}
+
+.kostki {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin: 20px 0;
+    flex-wrap: wrap;
+}
+
+.kostka {
+    display: grid;
+    grid-template-columns: repeat(3, 18px);
+    grid-template-rows: repeat(3, 18px);
+    gap: 4px;
+    padding: 6px;
+    border: 2px solid #333;
+    border-radius: 8px;
+    width: 80px;
+    height: 80px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.kostka:hover {
+    transform: scale(1.05);
+}
+
+.kostka[disabled] {
+    background-color: #999;
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.kostka.selected {
+    background-color: #ffeb3b;
+    border-color: #ff9800;
+}
+
+.pole {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: transparent;
+}
+
+.kostka.n1 > .p7 { background-color: black; }
+
+.kostka.n2 > .p2, 
+.kostka.n2 > .p5 { background-color: black; }
+
+.kostka.n3 > .p1, 
+.kostka.n3 > .p6,
+.kostka.n3 > .p7 { background-color: black; }
+
+.kostka.n4 > .p1, 
+.kostka.n4 > .p3,
+.kostka.n4 > .p4,
+.kostka.n4 > .p6 { background-color: black; }
+
+.kostka.n5 > .p1, 
+.kostka.n5 > .p3,
+.kostka.n5 > .p4,
+.kostka.n5 > .p6,
+.kostka.n5 > .p7 { background-color: black; }
+
+.kostka.n6 > .p1, 
+.kostka.n6 > .p2,
+.kostka.n6 > .p3,
+.kostka.n6 > .p4,
+.kostka.n6 > .p5,
+.kostka.n6 > .p6 { background-color: black; }
+
+.p1 { grid-column: 1; grid-row: 1; }
+.p2 { grid-column: 2; grid-row: 1; }
+.p3 { grid-column: 3; grid-row: 1; }
+.p7 { grid-column: 2; grid-row: 2; }
+.p4 { grid-column: 1; grid-row: 3; }
+.p5 { grid-column: 2; grid-row: 3; }
+.p6 { grid-column: 3; grid-row: 3; }
+
+.controls {
+    margin: 20px 0;
+}
+
+button {
+    padding: 12px 30px;
+    font-size: 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+#rolls {
+    margin: 10px 0 0 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.score-section {
+    flex: 1;
+}
+
+.score-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.score-table tr {
+    border-bottom: 1px solid #ddd;
+}
+
+.score-table td {
+    padding: 8px;
+    text-align: left;
+}
+
+.score-table td:last-child {
+    text-align: center;
+    font-weight: bold;
+    width: 60px;
+}
+
+.category {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.category:hover {
+    background-color: #e8f5e9;
+}
+
+.category.used {
+    background-color: #f5f5f5;
+    cursor: default;
+}
+
+.category.used:hover {
+    background-color: #f5f5f5;
+}
+
+.sumline {
+    border-top: 2px solid #333;
+    background-color: #f9f9f9;
+    font-weight: bold;
+}
+
+.bonusline {
+    background-color: #fff3cd;
+    font-weight: bold;
+}
+
+.total {
+    border-top: 3px solid #333;
+    background-color: #e8f5e9;
+    font-weight: bold;
+}
+
+.message {
+    text-align: center;
+    font-size: 16px;
+    margin-top: 20px;
+    padding: 10px;
+    min-height: 20px;
+    color: #333;
+}
+
+.message.error {
+    color: #d32f2f;
+    background-color: #ffebee;
+    border-radius: 5px;
+}
+
+.message.success {
+    color: #388e3c;
+    background-color: #e8f5e9;
+    border-radius: 5px;
+}
+
+@media (max-width: 768px) {
+    .game-area {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .kostki {
+        flex-wrap: wrap;
+    }
+}

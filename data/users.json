@@ -1,1 +1,11 @@
-[]
+{
+    "mo6zjf35vzls4sfpffs": {
+        "id": "mo6zjf35vzls4sfpffs",
+        "name": "kevin",
+        "gender": "male",
+        "birthdate": "2007-08-21",
+        "weight": 92,
+        "height": 183,
+        "avatar": "avatar1.png"
+    }
+}

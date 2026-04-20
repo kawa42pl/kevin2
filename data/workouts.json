@@ -1,1 +1,25 @@
-[]
+[
+    {
+        "id": "69e5f08a9b5094.18877422",
+        "type": "session",
+        "date": "2026-04-20",
+        "plan": "trojboj",
+        "note": "1 dzien",
+        "exercises": [
+            {
+                "name": "21",
+                "sets": 1,
+                "reps": 21,
+                "weight": 2123,
+                "rpe": 5
+            },
+            {
+                "name": "12",
+                "sets": 21,
+                "reps": 21,
+                "weight": 21,
+                "rpe": 2
+            }
+        ]
+    }
+]

@@ -23,9 +23,50 @@
                 $progress = min(100, ($todayConsumed / $todayGoal) * 100);
                 ?>
                 <div class="progress-bar">
-                    <div class="progress-fill" style="width: <?php echo $progress; ?>%"></div>
+                    <div class="progress-fill" id="calorieProgressFill" style="width: <?php echo $progress; ?>%"></div>
                 </div>
-                <p><?php echo $todayConsumed; ?>/<?php echo $todayGoal; ?> kcal</p>
+                <p id="calorieSummary"><span id="calorieConsumed"><?php echo $todayConsumed; ?></span>/<span id="calorieGoalValue"><?php echo $todayGoal; ?></span> kcal</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-apple-alt"></i>
+                <h3>Dodaj spożycie kalorii</h3>
+            </div>
+            <div class="card-body">
+                <form id="addCaloriesForm">
+                    <div class="form-group">
+                        <label for="caloriesAmount">Kalorie (kcal):</label>
+                        <input type="number" id="caloriesAmount" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="caloriesDescription">Opis produktu/posiłku:</label>
+                        <input type="text" id="caloriesDescription" placeholder="np. owsianka, kurczak, shake">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Dodaj kalorie</button>
+                </form>
+                <div class="nutrition-log">
+                    <h4>Dzisiejszy dziennik</h4>
+                    <ul id="calorieEntriesList">
+                        <?php
+                        $todayEntries = [];
+                        foreach ($nutrition as $entry) {
+                            if ($entry['date'] === $today) {
+                                $todayEntries = $entry['entries'] ?? [];
+                                break;
+                            }
+                        }
+                        if (!$todayEntries) {
+                            echo '<li class="empty-state">Brak wpisów kalorycznych na dziś.</li>';
+                        } else {
+                            foreach ($todayEntries as $item) {
+                                echo '<li>' . htmlspecialchars($item['time'] ?? '') . ' - ' . htmlspecialchars($item['description'] ?? 'posiłek') . ': ' . intval($item['calories']) . ' kcal</li>';
+                            }
+                        }
+                        ?>
+                    </ul>
+                </div>
             </div>
         </div>
 
@@ -136,6 +177,11 @@
 document.addEventListener('DOMContentLoaded', function() {
     animateCounters();
     loadWeightChart();
+    loadNutritionData();
+    const addForm = document.getElementById('addCaloriesForm');
+    if (addForm) {
+        addForm.addEventListener('submit', addCalories);
+    }
 });
 
 function animateCounters() {
@@ -163,6 +209,62 @@ function animateNumber(element, start, end, duration) {
         }
     }
     requestAnimationFrame(update);
+}
+
+function loadNutritionData() {
+    fetch('api/nutrition.php?action=get_today_nutrition')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const entry = data.data;
+                const consumed = entry.consumed || 0;
+                const goal = entry.goal || 2000;
+                const progress = Math.min(100, (consumed / goal) * 100);
+                document.getElementById('calorieConsumed').textContent = consumed;
+                document.getElementById('calorieGoalValue').textContent = goal;
+                document.getElementById('calorieProgressFill').style.width = progress + '%';
+
+                const list = document.getElementById('calorieEntriesList');
+                list.innerHTML = '';
+                if (!entry.entries || entry.entries.length === 0) {
+                    list.innerHTML = '<li class="empty-state">Brak wpisów kalorycznych na dziś.</li>';
+                } else {
+                    entry.entries.forEach(item => {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = `${item.time || ''} - ${item.description || 'posiłek'}: ${item.calories} kcal`;
+                        list.appendChild(listItem);
+                    });
+                }
+            }
+        });
+}
+
+function addCalories(event) {
+    event.preventDefault();
+    const calories = parseInt(document.getElementById('caloriesAmount').value, 10);
+    const description = document.getElementById('caloriesDescription').value.trim();
+    if (!calories || calories <= 0) {
+        showToast('Wprowadź liczbę kalorii większą niż 0', 'error');
+        return;
+    }
+
+    fetch('api/nutrition.php?action=add_calories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ calories, description })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast('Dodano kalorie!', 'success');
+                document.getElementById('addCaloriesForm').reset();
+                loadNutritionData();
+                loadWeightChart();
+            } else {
+                showToast(data.error || 'Błąd zapisu kalorii', 'error');
+            }
+        })
+        .catch(() => showToast('Błąd połączenia z serwerem', 'error')); 
 }
 
 function loadWeightChart() {

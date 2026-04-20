@@ -70,6 +70,90 @@ switch ($action) {
         }
         break;
 
+    case 'add_calories':
+        $input = json_decode(file_get_contents('php://input'), true);
+        $calories = validateInput($input['calories'] ?? 0, 'int');
+        $description = validateInput($input['description'] ?? '');
+        $date = validateInput($input['date'] ?? date('Y-m-d'));
+
+        if ($calories <= 0) {
+            echo json_encode(['success' => false, 'error' => 'Podaj poprawną liczbę kalorii']);
+            exit;
+        }
+
+        $nutrition = loadJsonData('../data/nutrition.json') ?: [];
+        $today = $date;
+        $found = false;
+        foreach ($nutrition as &$entry) {
+            if ($entry['date'] === $today) {
+                $found = true;
+                $entry['entries'] = $entry['entries'] ?? [];
+                $entry['entries'][] = [
+                    'id' => generateId(),
+                    'time' => date('H:i'),
+                    'calories' => $calories,
+                    'description' => $description
+                ];
+                $entry['consumed'] = ($entry['consumed'] ?? 0) + $calories;
+                break;
+            }
+        }
+
+        if (!$found) {
+            $nutrition[] = [
+                'id' => generateId(),
+                'date' => $today,
+                'goal' => 2000,
+                'consumed' => $calories,
+                'entries' => [[
+                    'id' => generateId(),
+                    'time' => date('H:i'),
+                    'calories' => $calories,
+                    'description' => $description
+                ]]
+            ];
+        }
+
+        if (saveJsonData('../data/nutrition.json', $nutrition)) {
+            // Odczytaj ponownie dzisiejszy wpis, aby zwrócić zaktualizowane dane
+            $responseEntry = [
+                'date' => $today,
+                'goal' => 2000,
+                'consumed' => 0,
+                'entries' => []
+            ];
+            foreach ($nutrition as $item) {
+                if ($item['date'] === $today) {
+                    $responseEntry = $item;
+                    break;
+                }
+            }
+            echo json_encode(['success' => true, 'data' => $responseEntry]);
+        } else {
+            echo json_encode(['success' => false, 'error' => 'Błąd zapisu']);
+        }
+        break;
+
+    case 'get_today_nutrition':
+        $nutrition = loadJsonData('../data/nutrition.json') ?: [];
+        $today = date('Y-m-d');
+        $result = [
+            'date' => $today,
+            'goal' => 2000,
+            'consumed' => 0,
+            'entries' => []
+        ];
+
+        foreach ($nutrition as $entry) {
+            if ($entry['date'] === $today) {
+                $result = array_merge($result, $entry);
+                break;
+            }
+        }
+
+        echo json_encode(['success' => true, 'data' => $result]);
+        break;
+
     case 'get_weight_data':
         $nutrition = loadJsonData('../data/nutrition.json') ?: [];
         $weightData = [];

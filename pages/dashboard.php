@@ -9,12 +9,18 @@
             <div class="card-body">
                 <?php
                 $nutrition = loadJsonData('data/nutrition.json') ?: [];
+                if (!is_array($nutrition)) {
+                    $nutrition = [];
+                }
                 $today = date('Y-m-d');
                 $todayGoal = 2000; // Domyślny cel
                 $todayConsumed = 0;
 
                 foreach ($nutrition as $entry) {
-                    if ($entry['date'] === $today && isset($entry['consumed'])) {
+                    if (!is_array($entry)) {
+                        continue;
+                    }
+                    if (($entry['date'] ?? '') === $today && isset($entry['consumed'])) {
                         $todayConsumed = $entry['consumed'];
                         $todayGoal = $entry['goal'] ?? $todayGoal;
                     }
@@ -42,15 +48,15 @@
                     </div>
                     <div class="form-group">
                         <label for="proteinAmount">Białko (g):</label>
-                        <input type="number" id="proteinAmount" min="0" step="0.1" required>
+                        <input type="number" id="proteinAmount" min="0" step="0.1" value="0">
                     </div>
                     <div class="form-group">
                         <label for="fatAmount">Tłuszcze (g):</label>
-                        <input type="number" id="fatAmount" min="0" step="0.1" required>
+                        <input type="number" id="fatAmount" min="0" step="0.1" value="0">
                     </div>
                     <div class="form-group">
                         <label for="carbsAmount">Węglowodany (g):</label>
-                        <input type="number" id="carbsAmount" min="0" step="0.1" required>
+                        <input type="number" id="carbsAmount" min="0" step="0.1" value="0">
                     </div>
                     <div class="form-group">
                         <label for="caloriesDescription">Opis produktu/posiłku:</label>
@@ -71,7 +77,10 @@
                         $todayEntries = [];
                         $todayTotals = ['calories' => 0, 'protein' => 0, 'fat' => 0, 'carbs' => 0];
                         foreach ($nutrition as $entry) {
-                            if ($entry['date'] === $today) {
+                            if (!is_array($entry)) {
+                                continue;
+                            }
+                            if (($entry['date'] ?? '') === $today) {
                                 $todayEntries = $entry['entries'] ?? [];
                                 $todayTotals['calories'] = $entry['consumed'] ?? 0;
                                 $todayTotals['protein'] = $entry['protein'] ?? 0;
@@ -269,17 +278,23 @@ function loadNutritionData() {
 
 function addCalories(event) {
     event.preventDefault();
-    const calories = parseInt(document.getElementById('caloriesAmount').value, 10);
-    const protein = parseFloat(document.getElementById('proteinAmount').value);
-    const fat = parseFloat(document.getElementById('fatAmount').value);
-    const carbs = parseFloat(document.getElementById('carbsAmount').value);
-    if (!calories || calories <= 0) {
-        showToast('Wprowadź liczbę kalorii większą niż 0', 'error');
+    let calories = parseInt(document.getElementById('caloriesAmount').value, 10);
+    const protein = parseFloat(document.getElementById('proteinAmount').value) || 0;
+    const fat = parseFloat(document.getElementById('fatAmount').value) || 0;
+    const carbs = parseFloat(document.getElementById('carbsAmount').value) || 0;
+    const description = document.getElementById('caloriesDescription').value.trim();
+    const hasMacros = protein > 0 || fat > 0 || carbs > 0;
+
+    if ((!calories || calories <= 0) && !hasMacros) {
+        showToast('Wprowadź liczbę kalorii lub makroskładniki', 'error');
         return;
     }
     if (protein < 0 || fat < 0 || carbs < 0) {
         showToast('Podaj poprawne wartości makroskładników', 'error');
         return;
+    }
+    if ((!calories || calories <= 0) && hasMacros) {
+        calories = Math.round(protein * 4 + fat * 9 + carbs * 4);
     }
 
     fetch('api/nutrition.php?action=add_calories', {

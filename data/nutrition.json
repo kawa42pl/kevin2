@@ -1,8 +1,50 @@
-[
-    {
-        "id": "69e5f03251b886.57711328",
+{
+    "test": 1,
+    "0": {
+        "id": "69e5fa3eb2c063.64289369",
         "date": "2026-04-20",
-        "goal": 3092,
-        "consumed": 0
+        "goal": 2000,
+        "consumed": 844,
+        "protein": 48,
+        "fat": 84,
+        "carbs": 208,
+        "entries": [
+            {
+                "id": "69e5fa3eb2c1d3.12970621",
+                "time": "12:04",
+                "calories": 211,
+                "protein": 12,
+                "fat": 21,
+                "carbs": 52,
+                "description": "ass"
+            },
+            {
+                "id": "69e5fa3f981d39.48063426",
+                "time": "12:04",
+                "calories": 211,
+                "protein": 12,
+                "fat": 21,
+                "carbs": 52,
+                "description": "ass"
+            },
+            {
+                "id": "69e5fa40454df1.03637249",
+                "time": "12:04",
+                "calories": 211,
+                "protein": 12,
+                "fat": 21,
+                "carbs": 52,
+                "description": "ass"
+            },
+            {
+                "id": "69e5fa411b3218.84294532",
+                "time": "12:04",
+                "calories": 211,
+                "protein": 12,
+                "fat": 21,
+                "carbs": 52,
+                "description": "ass"
+            }
+        ]
     }
-]
+}

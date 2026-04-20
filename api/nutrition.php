@@ -72,12 +72,20 @@ switch ($action) {
 
     case 'add_calories':
         $input = json_decode(file_get_contents('php://input'), true);
-        $calories = validateInput($input['calories'] ?? 0, 'int');
-        $protein = validateInput($input['protein'] ?? 0, 'float');
-        $fat = validateInput($input['fat'] ?? 0, 'float');
-        $carbs = validateInput($input['carbs'] ?? 0, 'float');
+        $rawCalories = validateInput($input['calories'] ?? 0, 'int');
+        $calories = $rawCalories === false ? 0 : $rawCalories;
+        $rawProtein = validateInput($input['protein'] ?? 0, 'float');
+        $protein = $rawProtein === false ? 0 : floatval($rawProtein);
+        $rawFat = validateInput($input['fat'] ?? 0, 'float');
+        $fat = $rawFat === false ? 0 : floatval($rawFat);
+        $rawCarbs = validateInput($input['carbs'] ?? 0, 'float');
+        $carbs = $rawCarbs === false ? 0 : floatval($rawCarbs);
         $description = validateInput($input['description'] ?? '');
         $date = validateInput($input['date'] ?? date('Y-m-d'));
+
+        if ($calories <= 0 && ($protein > 0 || $fat > 0 || $carbs > 0)) {
+            $calories = round($protein * 4 + $fat * 9 + $carbs * 4);
+        }
 
         if ($calories <= 0 || $protein < 0 || $fat < 0 || $carbs < 0) {
             echo json_encode(['success' => false, 'error' => 'Podaj poprawne wartości makroskładników']);

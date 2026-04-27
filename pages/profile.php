@@ -53,6 +53,12 @@
                     </div>
                     <input type="hidden" id="avatar">
                 </div>
+                <div class="form-group">
+                    <label for="profilePhoto">Załaduj własne zdjęcie profilowe:</label>
+                    <input type="file" id="profilePhoto" accept="image/*">
+                    <small>Obsługiwane formaty: JPG, PNG, GIF (max 5MB)</small>
+                    <div id="photoPreview" style="margin-top: 10px;"></div>
+                </div>
                 <button type="submit" class="btn btn-primary">Zapisz</button>
                 <button type="button" id="cancelEdit" class="btn btn-secondary">Anuluj</button>
             </form>
@@ -149,32 +155,91 @@ document.getElementById('cancelEdit').addEventListener('click', () => {
     document.getElementById('profileForm').style.display = 'none';
 });
 
+document.getElementById('profilePhoto').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    const preview = document.getElementById('photoPreview');
+    if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            preview.innerHTML = `<img src="${event.target.result}" style="max-width: 150px; border-radius: 8px;">`;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
 document.getElementById('userForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
-    const data = {
-        id: document.getElementById('profileId').value || generateId(),
-        name: document.getElementById('name').value,
-        gender: document.getElementById('gender').value,
-        birthdate: document.getElementById('birthdate').value,
-        weight: parseFloat(document.getElementById('weight').value),
-        height: parseInt(document.getElementById('height').value),
-        avatar: document.getElementById('avatar').value
-    };
+    const profileId = document.getElementById('profileId').value || generateId();
+    const fileInput = document.getElementById('profilePhoto');
+    const file = fileInput.files[0];
+    
+    if (file) {
+        const formData = new FormData();
+        formData.append('id', profileId);
+        formData.append('file', file);
+        
+        fetch('api/user.php?action=upload_avatar', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(uploadData => {
+            if (!uploadData.success) {
+                showToast(uploadData.error || 'Błąd przy wgrywaniu zdjęcia', 'error');
+                return;
+            }
+            
+            const profileData = {
+                id: profileId,
+                name: document.getElementById('name').value,
+                gender: document.getElementById('gender').value,
+                birthdate: document.getElementById('birthdate').value,
+                weight: parseFloat(document.getElementById('weight').value),
+                height: parseInt(document.getElementById('height').value),
+                avatar: uploadData.data.avatar
+            };
+            
+            fetch('api/user.php?action=save_profile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(profileData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                showToast(data.success ? 'Profil zapisany!' : data.error, data.success ? 'success' : 'error');
+                if (data.success) {
+                    document.getElementById('profileForm').style.display = 'none';
+                    loadProfiles();
+                }
+            });
+        })
+        .catch(err => showToast('Błąd przy wgrywaniu zdjęcia: ' + err.message, 'error'));
+    } else {
+        const data = {
+            id: profileId,
+            name: document.getElementById('name').value,
+            gender: document.getElementById('gender').value,
+            birthdate: document.getElementById('birthdate').value,
+            weight: parseFloat(document.getElementById('weight').value),
+            height: parseInt(document.getElementById('height').value),
+            avatar: document.getElementById('avatar').value
+        };
 
-    fetch('api/user.php?action=save_profile', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(data => {
-        showToast(data.success ? 'Profil zapisany!' : data.error, data.success ? 'success' : 'error');
-        if (data.success) {
-            document.getElementById('profileForm').style.display = 'none';
-            loadProfiles();
-        }
-    });
+        fetch('api/user.php?action=save_profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            showToast(data.success ? 'Profil zapisany!' : data.error, data.success ? 'success' : 'error');
+            if (data.success) {
+                document.getElementById('profileForm').style.display = 'none';
+                loadProfiles();
+            }
+        });
+    }
 });
 
 function switchProfile(id) {

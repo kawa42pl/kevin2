@@ -84,6 +84,50 @@ switch ($action) {
         }
         break;
 
+    case 'upload_avatar':
+        if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
+            echo json_encode(['success' => false, 'error' => 'Błąd wgrywania pliku']);
+            exit;
+        }
+
+        $file = $_FILES['file'];
+        $profileId = validateInput($_POST['id'] ?? '', 'string');
+        
+        if (!$profileId) {
+            echo json_encode(['success' => false, 'error' => 'Brak ID profilu']);
+            exit;
+        }
+
+        $allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        $maxSize = 5 * 1024 * 1024; // 5MB
+
+        if (!in_array($file['type'], $allowedMimes)) {
+            echo json_encode(['success' => false, 'error' => 'Nieobsługiwany format pliku']);
+            exit;
+        }
+
+        if ($file['size'] > $maxSize) {
+            echo json_encode(['success' => false, 'error' => 'Plik jest za duży (max 5MB)']);
+            exit;
+        }
+
+        $uploadDir = '../uploads/avatars/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $filename = $profileId . '_' . time() . '.' . $ext;
+        $filepath = $uploadDir . $filename;
+        $relativeUrl = 'uploads/avatars/' . $filename;
+
+        if (move_uploaded_file($file['tmp_name'], $filepath)) {
+            echo json_encode(['success' => true, 'data' => ['avatar' => $relativeUrl]]);
+        } else {
+            echo json_encode(['success' => false, 'error' => 'Błąd zapisania pliku']);
+        }
+        break;
+
     default:
         echo json_encode(['success' => false, 'error' => 'Nieznana akcja']);
 }

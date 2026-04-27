@@ -21,5 +21,28 @@
                 "rpe": 2
             }
         ]
+    },
+    {
+        "id": "69ef226897b1b7.18051987",
+        "type": "session",
+        "date": "2026-04-27",
+        "plan": "",
+        "note": "",
+        "exercises": [
+            {
+                "name": "martwy",
+                "sets": 4,
+                "reps": 12,
+                "weight": 200,
+                "rpe": 7
+            },
+            {
+                "name": "rdl",
+                "sets": 23,
+                "reps": 2,
+                "weight": 21,
+                "rpe": 5
+            }
+        ]
     }
 ]

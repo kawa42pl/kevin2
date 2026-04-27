@@ -328,6 +328,26 @@ $prizes = [
     // Event listeners
     document.getElementById('spinButton').addEventListener('click', spin);
     
+    // Reset button
+    document.getElementById('resetButton').addEventListener('click', function() {
+        if (confirm('Czy chcesz usunąć całą historię spinów? ⚠️')) {
+            wheelHistory = [];
+            localStorage.setItem('wheelHistory', JSON.stringify(wheelHistory));
+            localStorage.removeItem('lastWheelSpin');
+            lastSpinTime = null;
+            
+            const resultDiv = document.getElementById('resultDiv');
+            resultDiv.style.display = 'none';
+            
+            updateHistory();
+            
+            document.getElementById('spinButton').disabled = false;
+            document.getElementById('spinButton').textContent = 'KRĘĆ\nKOŁO!';
+            
+            showNotification('✨ Historia wyczyszczona! Możesz kręcić od nowa!', 'success');
+        }
+    });
+    
     // Inicjalizacja
     drawWheel();
     updateHistory();

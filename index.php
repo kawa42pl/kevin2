@@ -20,7 +20,7 @@ if (isset($_GET['action'])) {
 }
 
 // Routing stron
-$allowedPages = ['dashboard', 'calculator', 'onerm', 'workouts', 'plans', 'profile'];
+$allowedPages = ['dashboard', 'calculator', 'onerm', 'workouts', 'plans', 'profile', 'wheel'];
 
 if (!in_array($page, $allowedPages)) {
     $page = isset($_SESSION['user_id']) ? 'dashboard' : 'profile';

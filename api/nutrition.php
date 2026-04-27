@@ -42,7 +42,10 @@ switch ($action) {
             exit;
         }
 
-        $nutrition = loadJsonData('../data/nutrition.json') ?: [];
+        $nutrition = loadJsonData('../data/nutrition.json');
+        if (!is_array($nutrition)) {
+            $nutrition = [];
+        }
         $today = date('Y-m-d');
 
         // Znajdź lub utwórz wpis na dzisiaj
@@ -92,7 +95,10 @@ switch ($action) {
             exit;
         }
 
-        $nutrition = loadJsonData('../data/nutrition.json') ?: [];
+        $nutrition = loadJsonData('../data/nutrition.json');
+        if (!is_array($nutrition)) {
+            $nutrition = [];
+        }
         $today = $date;
         $found = false;
         foreach ($nutrition as &$entry) {
@@ -161,7 +167,10 @@ switch ($action) {
         break;
 
     case 'get_today_nutrition':
-        $nutrition = loadJsonData('../data/nutrition.json') ?: [];
+        $nutrition = loadJsonData('../data/nutrition.json');
+        if (!is_array($nutrition)) {
+            $nutrition = [];
+        }
         $today = date('Y-m-d');
         $result = [
             'date' => $today,
@@ -184,7 +193,10 @@ switch ($action) {
         break;
 
     case 'get_weight_data':
-        $nutrition = loadJsonData('../data/nutrition.json') ?: [];
+        $nutrition = loadJsonData('../data/nutrition.json');
+        if (!is_array($nutrition)) {
+            $nutrition = [];
+        }
         $weightData = [];
 
         // Pobierz dane wagi z ostatnich 30 dni

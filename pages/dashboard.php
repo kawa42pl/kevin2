@@ -58,10 +58,6 @@
                         <label for="carbsAmount">Węglowodany (g):</label>
                         <input type="number" id="carbsAmount" min="0" step="0.1" value="0">
                     </div>
-                    <div class="form-group">
-                        <label for="caloriesDescription">Opis produktu/posiłku:</label>
-                        <input type="text" id="caloriesDescription" placeholder="np. owsianka, kurczak, shake">
-                    </div>
                     <button type="submit" class="btn btn-primary">Dodaj kalorie</button>
                 </form>
                 <div class="nutrition-log">
@@ -72,33 +68,6 @@
                         <span>Tłuszcze: <strong id="totalFat">0</strong> g</span>
                         <span>Węglowodany: <strong id="totalCarbs">0</strong> g</span>
                     </div>
-                    <ul id="calorieEntriesList">
-                        <?php
-                        $todayEntries = [];
-                        $todayTotals = ['calories' => 0, 'protein' => 0, 'fat' => 0, 'carbs' => 0];
-                        foreach ($nutrition as $entry) {
-                            if (!is_array($entry)) {
-                                continue;
-                            }
-                            if (($entry['date'] ?? '') === $today) {
-                                $todayEntries = $entry['entries'] ?? [];
-                                $todayTotals['calories'] = $entry['consumed'] ?? 0;
-                                $todayTotals['protein'] = $entry['protein'] ?? 0;
-                                $todayTotals['fat'] = $entry['fat'] ?? 0;
-                                $todayTotals['carbs'] = $entry['carbs'] ?? 0;
-                                break;
-                            }
-                        }
-                        echo '<script>window.initialNutritionTotals = ' . json_encode($todayTotals) . ';</script>';
-                        if (!$todayEntries) {
-                            echo '<li class="empty-state">Brak wpisów kalorycznych na dziś.</li>';
-                        } else {
-                            foreach ($todayEntries as $item) {
-                                echo '<li>' . htmlspecialchars($item['time'] ?? '') . ' - ' . htmlspecialchars($item['description'] ?? 'posiłek') . ': ' . intval($item['calories']) . ' kcal, ' . floatval($item['protein']) . 'g B, ' . floatval($item['fat']) . 'g T, ' . floatval($item['carbs']) . 'g W</li>';
-                            }
-                        }
-                        ?>
-                    </ul>
                 </div>
             </div>
         </div>
@@ -246,7 +215,12 @@ function animateNumber(element, start, end, duration) {
 
 function loadNutritionData() {
     fetch('api/nutrition.php?action=get_today_nutrition')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => { throw new Error(text || response.statusText); });
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
                 const entry = data.data;
@@ -257,17 +231,6 @@ function loadNutritionData() {
                 document.getElementById('calorieGoalValue').textContent = goal;
                 document.getElementById('calorieProgressFill').style.width = progress + '%';
 
-                const list = document.getElementById('calorieEntriesList');
-                list.innerHTML = '';
-                if (!entry.entries || entry.entries.length === 0) {
-                    list.innerHTML = '<li class="empty-state">Brak wpisów kalorycznych na dziś.</li>';
-                } else {
-                    entry.entries.forEach(item => {
-                        const listItem = document.createElement('li');
-                        listItem.textContent = `${item.time || ''} - ${item.description || 'posiłek'}: ${item.calories} kcal, ${item.protein || 0}g B, ${item.fat || 0}g T, ${item.carbs || 0}g W`;
-                        list.appendChild(listItem);
-                    });
-                }
                 document.getElementById('totalCalories').textContent = entry.consumed || 0;
                 document.getElementById('totalProtein').textContent = entry.protein || 0;
                 document.getElementById('totalFat').textContent = entry.fat || 0;
@@ -282,7 +245,6 @@ function addCalories(event) {
     const protein = parseFloat(document.getElementById('proteinAmount').value) || 0;
     const fat = parseFloat(document.getElementById('fatAmount').value) || 0;
     const carbs = parseFloat(document.getElementById('carbsAmount').value) || 0;
-    const description = document.getElementById('caloriesDescription').value.trim();
     const hasMacros = protein > 0 || fat > 0 || carbs > 0;
 
     if ((!calories || calories <= 0) && !hasMacros) {
@@ -300,9 +262,14 @@ function addCalories(event) {
     fetch('api/nutrition.php?action=add_calories', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ calories, protein, fat, carbs, description })
+        body: JSON.stringify({ calories, protein, fat, carbs })
     })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => { throw new Error(text || response.statusText); });
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
                 showToast('Dodano kalorie!', 'success');

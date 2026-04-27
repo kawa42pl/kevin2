@@ -8,6 +8,7 @@
         <li><a href="?page=onerm" class="menu-item <?php echo ($_GET['page'] ?? '') === 'onerm' ? 'active' : ''; ?>"><i class="fas fa-weight-hanging"></i> Kalkulator 1RM</a></li>
         <li><a href="?page=workouts" class="menu-item <?php echo ($_GET['page'] ?? '') === 'workouts' ? 'active' : ''; ?>"><i class="fas fa-calendar-alt"></i> Dziennik Treningów</a></li>
         <li><a href="?page=plans" class="menu-item <?php echo ($_GET['page'] ?? '') === 'plans' ? 'active' : ''; ?>"><i class="fas fa-clipboard-list"></i> Plany Treningowe</a></li>
+        <li><a href="?page=wheel" class="menu-item <?php echo ($_GET['page'] ?? '') === 'wheel' ? 'active' : ''; ?>"><i class="fas fa-dharmachakra"></i> Koło Fortuny</a></li>
         <li><a href="?page=profile" class="menu-item <?php echo ($_GET['page'] ?? '') === 'profile' ? 'active' : ''; ?>"><i class="fas fa-user"></i> Profil</a></li>
     </ul>
 </nav>

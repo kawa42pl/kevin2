@@ -730,3 +730,436 @@ table th {
         padding: 15px;
     }
 }
+
+/* ===== WHEEL OF FORTUNE STYLES ===== */
+
+.wheel-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.wheel-container h1 {
+    color: var(--primary-color);
+    margin-bottom: 10px;
+    font-size: 2.5rem;
+    text-align: center;
+    text-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+}
+
+.wheel-subtitle {
+    text-align: center;
+    color: var(--text-muted);
+    margin-bottom: 40px;
+    font-size: 1.1rem;
+}
+
+.wheel-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 50px;
+    align-items: center;
+}
+
+.wheel-canvas-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.wheel-canvas {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#wheelCanvas {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+    filter: drop-shadow(0 0 30px rgba(0, 229, 255, 0.3));
+    transition: filter 0.3s ease;
+}
+
+#wheelCanvas:hover {
+    filter: drop-shadow(0 0 50px rgba(0, 229, 255, 0.5));
+}
+
+.wheel-pointer {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-top: 25px solid var(--accent-color);
+    z-index: 10;
+    filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.5));
+}
+
+.wheel-info {
+    background-color: var(--card-bg);
+    padding: 30px;
+    border-radius: var(--border-radius);
+    border: 2px solid var(--border-color);
+}
+
+.wheel-info h3 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+}
+
+.wheel-info ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 30px;
+}
+
+.wheel-info li {
+    padding: 10px 0;
+    color: var(--text-color);
+    border-bottom: 1px solid var(--border-color);
+    font-size: 1.05rem;
+}
+
+.wheel-info li:last-child {
+    border-bottom: none;
+}
+
+.wheel-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-reset {
+    flex: 1;
+    padding: 10px 15px;
+    font-size: 0.95rem;
+    font-weight: bold;
+    background-color: var(--darker-bg);
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+}
+
+.btn-reset:hover {
+    background-color: var(--card-bg);
+    color: var(--error-color);
+    border-color: var(--error-color);
+}
+
+.btn-reset:active {
+    transform: scale(0.98);
+}
+
+.btn-spin {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 0;
+    font-size: 0.95rem;
+    font-weight: bold;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: var(--dark-bg);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.btn-spin:hover:not(:disabled) {
+    transform: translate(-50%, -50%) scale(1.1);
+    box-shadow: 0 0 30px rgba(0, 229, 255, 0.8);
+}
+
+.btn-spin:active:not(:disabled) {
+    transform: translate(-50%, -50%) scale(0.95);
+}
+
+.btn-spin:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.result-box {
+    background-color: var(--darker-bg);
+    border: 2px solid var(--success-color);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    text-align: center;
+    animation: slideIn 0.5s ease;
+}
+
+.result-box h3 {
+    color: var(--success-color);
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+}
+
+.result-box.celebrate {
+    animation: celebrate 0.6s ease;
+}
+
+.result-icon {
+    font-size: 4rem;
+    margin: 20px 0;
+    display: inline-block;
+    animation: bounceIn 0.6s ease;
+}
+
+.result-name {
+    font-size: 1.8rem;
+    color: var(--primary-color);
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.result-desc {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin-bottom: 15px;
+}
+
+.result-time {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.history-section {
+    background-color: var(--card-bg);
+    padding: 30px;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+}
+
+.history-section h3 {
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    font-size: 1.3rem;
+}
+
+.history-list {
+    min-height: 200px;
+}
+
+.history-items {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.history-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background-color: var(--darker-bg);
+    border-radius: var(--border-radius);
+    border-left: 4px solid var(--primary-color);
+    transition: all 0.3s ease;
+}
+
+.history-item:hover {
+    background-color: var(--card-bg);
+    transform: translateX(5px);
+}
+
+.history-icon {
+    font-size: 2rem;
+    min-width: 50px;
+    text-align: center;
+}
+
+.history-details {
+    flex: 1;
+}
+
+.history-details strong {
+    display: block;
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+}
+
+.history-date {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.history-number {
+    color: var(--secondary-color);
+    font-weight: bold;
+    min-width: 40px;
+    text-align: right;
+}
+
+/* Notifications */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 25px;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    z-index: 11000;
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
+    max-width: 300px;
+}
+
+.notification.show {
+    transform: translateX(0);
+}
+
+.notification-info {
+    background-color: var(--primary-color);
+    color: var(--dark-bg);
+}
+
+.notification-warning {
+    background-color: var(--warning-color);
+    color: white;
+}
+
+.notification-success {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.notification-error {
+    background-color: var(--error-color);
+    color: white;
+}
+
+/* Animations */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bounceIn {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes celebrate {
+    0%, 100% {
+        transform: scale(1) rotate(0deg);
+    }
+    25% {
+        transform: scale(1.05) rotate(-2deg);
+    }
+    75% {
+        transform: scale(1.05) rotate(2deg);
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Responsive wheel */
+@media (max-width: 1024px) {
+    .wheel-content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    .wheel-container h1 {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .wheel-container h1 {
+        font-size: 1.8rem;
+    }
+    
+    .wheel-subtitle {
+        font-size: 1rem;
+    }
+    
+    .wheel-content {
+        gap: 20px;
+    }
+    
+    .wheel-info {
+        padding: 20px;
+    }
+    
+    .btn-spin {
+        width: 70px;
+        height: 70px;
+        font-size: 0.85rem;
+    }
+    
+    .history-section {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .wheel-container h1 {
+        font-size: 1.5rem;
+    }
+    
+    .wheel-info li {
+        font-size: 0.95rem;
+    }
+    
+    .result-icon {
+        font-size: 3rem;
+    }
+    
+    .result-name {
+        font-size: 1.5rem;
+    }
+    
+    .btn-spin {
+        width: 60px;
+        height: 60px;
+        font-size: 0.8rem;
+    }
+}

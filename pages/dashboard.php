@@ -1,3 +1,13 @@
+<?php
+// Załaduj dane na potrzeby dashboard
+$today = date('Y-m-d');
+$workouts = loadJsonData('data/workouts.json') ?: [];
+$nutrition = loadJsonData('data/nutrition.json') ?: [];
+if (!is_array($nutrition)) {
+    $nutrition = [];
+}
+?>
+
 <div class="container">
     <!-- Sekcja statystyk użytkownika -->
     <div class="stats-banner">
@@ -40,11 +50,6 @@
             </div>
             <div class="card-body">
                 <?php
-                $nutrition = loadJsonData('data/nutrition.json') ?: [];
-                if (!is_array($nutrition)) {
-                    $nutrition = [];
-                }
-                $today = date('Y-m-d');
                 $todayGoal = 2000; // Domyślny cel
                 $todayConsumed = 0;
 
@@ -176,7 +181,6 @@
             </div>
             <div class="card-body">
                 <?php
-                $workouts = loadJsonData('data/workouts.json') ?: [];
                 $records = [];
                 foreach ($workouts as $workout) {
                     if ($workout['type'] === 'onerm_record') {

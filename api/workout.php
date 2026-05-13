@@ -166,6 +166,109 @@ switch ($action) {
         echo json_encode(['success' => true, 'data' => ['sessions' => $sessions, 'stats' => $stats, 'chartData' => $chartData]]);
         break;
 
+    case 'get_monthly_stats':
+        $workouts = loadJsonData('../data/workouts.json') ?: [];
+        $nutrition = loadJsonData('../data/nutrition.json') ?: [];
+        $thisMonth = date('Y-m');
+        $thisWeek = date('W');
+        $thisYear = date('Y');
+        
+        $monthlyCount = 0;
+        $avgCalories = 0;
+        $streak = 0;
+        $calorieDates = [];
+        
+        // Treningi w tym miesiącu
+        foreach ($workouts as $w) {
+            if ($w['type'] === 'session' && strpos($w['date'], $thisMonth) === 0) {
+                $monthlyCount++;
+            }
+        }
+        
+        // Średnie kalorie
+        $totalCalories = 0;
+        $calorieCount = 0;
+        foreach ($nutrition as $n) {
+            if (is_array($n) && strpos($n['date'] ?? '', $thisMonth) === 0) {
+                $totalCalories += $n['consumed'] ?? 0;
+                $calorieCount++;
+                $calorieDates[$n['date']] = true;
+            }
+        }
+        $avgCalories = $calorieCount > 0 ? intval($totalCalories / $calorieCount) : 0;
+        
+        // Seria treningów
+        $today = new DateTime();
+        for ($i = 0; $i < 100; $i++) {
+            $checkDate = $today->format('Y-m-d');
+            $dayHasWorkout = false;
+            
+            foreach ($workouts as $w) {
+                if ($w['type'] === 'session' && $w['date'] === $checkDate) {
+                    $dayHasWorkout = true;
+                    break;
+                }
+            }
+            
+            if ($dayHasWorkout) {
+                $streak++;
+                $today->modify('-1 day');
+            } else {
+                break;
+            }
+        }
+        
+        echo json_encode(['success' => true, 'data' => [
+            'monthly_count' => $monthlyCount,
+            'avg_calories' => $avgCalories,
+            'streak' => $streak
+        ]]);
+        break;
+
+    case 'get_recent':
+        $workouts = loadJsonData('../data/workouts.json') ?: [];
+        $sessions = [];
+        
+        foreach ($workouts as $w) {
+            if ($w['type'] === 'session') {
+                $sessions[] = $w;
+            }
+        }
+        
+        usort($sessions, fn($a, $b) => strtotime($b['date']) <=> strtotime($a['date']));
+        $recent = array_slice($sessions, 0, 5);
+        
+        echo json_encode(['success' => true, 'data' => $recent]);
+        break;
+
+    case 'get_weekly_activity':
+        $workouts = loadJsonData('../data/workouts.json') ?: [];
+        $days = ['Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So', 'Nd'];
+        $counts = [0, 0, 0, 0, 0, 0, 0];
+        
+        $today = new DateTime();
+        $monday = clone $today;
+        $monday->modify('monday this week');
+        
+        for ($i = 0; $i < 7; $i++) {
+            $checkDate = $monday->format('Y-m-d');
+            $dayOfWeek = $monday->format('N') - 1; // 0-6
+            
+            foreach ($workouts as $w) {
+                if ($w['type'] === 'session' && $w['date'] === $checkDate) {
+                    $counts[$dayOfWeek]++;
+                }
+            }
+            
+            $monday->modify('+1 day');
+        }
+        
+        echo json_encode(['success' => true, 'data' => [
+            'days' => $days,
+            'counts' => $counts
+        ]]);
+        break;
+
     default:
         echo json_encode(['success' => false, 'error' => 'Nieznana akcja']);
 }

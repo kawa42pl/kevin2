@@ -14,6 +14,9 @@
         ?></h1>
     </div>
     <div class="topbar-right">
+        <div id="themeToggle" style="cursor: pointer; font-size: 1.2rem; margin-right: 20px; transition: transform 0.2s;" title="Zmień motyw">
+            <i class="fas fa-palette"></i>
+        </div>
         <?php if (isset($_SESSION['user_id'])): ?>
             <div class="user-menu">
                 <img src="<?php echo $_SESSION['avatar'] ?? 'assets/default-avatar.png'; ?>" alt="Avatar" class="avatar">

@@ -248,7 +248,9 @@ function switchProfile(id) {
         .then(data => {
             if (data.success) {
                 showToast('Profil przełączony!', 'success');
-                location.reload();
+                setTimeout(() => {
+                    window.location.href = '?page=dashboard';
+                }, 500);
             } else {
                 showToast(data.error, 'error');
             }
@@ -267,12 +269,13 @@ function editProfile(id) {
 
 function deleteProfile(id) {
     if (confirm('Czy na pewno chcesz usunąć ten profil?')) {
-        fetch(`api/user.php?action=delete_profile&id=${id}`, { method: 'DELETE' })
+        fetch(`api/user.php?action=delete_profile&id=${id}`)
             .then(response => response.json())
             .then(data => {
                 showToast(data.success ? 'Profil usunięty!' : data.error, data.success ? 'success' : 'error');
                 if (data.success) loadProfiles();
-            });
+            })
+            .catch(err => showToast('Błąd usuwania profilu', 'error'));
     }
 }
 

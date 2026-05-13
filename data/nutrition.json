@@ -73,5 +73,25 @@
                 "description": "as"
             }
         ]
+    },
+    "1": {
+        "id": "69ef23a8c0f051.90872771",
+        "date": "2026-04-27",
+        "goal": 2000,
+        "consumed": 291,
+        "protein": 20,
+        "fat": 12,
+        "carbs": 2321,
+        "entries": [
+            {
+                "id": "69ef23a8c0f1a0.52311613",
+                "time": "10:51",
+                "calories": 291,
+                "protein": 20,
+                "fat": 12,
+                "carbs": 2321,
+                "description": ""
+            }
+        ]
     }
 }

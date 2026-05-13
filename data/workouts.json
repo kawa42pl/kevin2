@@ -44,5 +44,28 @@
                 "rpe": 5
             }
         ]
+    },
+    {
+        "id": "69ef242c904964.74338803",
+        "type": "session",
+        "date": "2026-04-27",
+        "plan": "trojboj",
+        "note": "",
+        "exercises": [
+            {
+                "name": "marty ciag",
+                "sets": 3,
+                "reps": 12,
+                "weight": 120,
+                "rpe": 8
+            },
+            {
+                "name": "da",
+                "sets": 2,
+                "reps": 2,
+                "weight": 12,
+                "rpe": 9
+            }
+        ]
     }
 ]
